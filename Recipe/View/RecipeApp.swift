@@ -23,7 +23,7 @@ struct RecipeApp: App {
     
     init() {
         do {
-            container = try ModelContainer(for: Recipe.self)
+            container = try ModelContainer(for: Recipe.self, Category.self)
         } catch {
             fatalError("Could not initialize model container: \(error)")
         }

@@ -182,3 +182,25 @@
   ]
 }
 
+
+
+{
+    "categories": [
+    {
+      "id": "ad8813fc-55e0-44ae-8b9c-7b6b99f9b5be",
+      "name": "Dessert"
+    },
+    {
+      "id": "e6401e47-dc06-4740-925d-d615cfbc6179",
+      "name": "Cookies"
+    },
+    {
+      "id": "ac3dcd18-f51e-4e85-950a-daff3ccab8b4",
+      "name": "Pasta"
+    },
+    {
+      "id": "30f7a021-d8ff-4719-8c29-cbbf5689354b",
+      "name": "Italian"
+    }
+}
+

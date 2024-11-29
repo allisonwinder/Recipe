@@ -11,29 +11,89 @@ import MarkdownUI
 
 struct ContentView: View {
     @Environment(RecipeViewModel.self) private var viewModel
+    @State private var recipeToEdit: Recipe?
+    
+    var exampleCategories: [Category]
+    var exampleRecipes: [Recipe]
+    
+    init() {
+        // Initialize categories
+        self.exampleCategories = [
+            Category(name: "All"),
+            Category(name: "Breakfast"),
+            Category(name: "Dessert"),
+            Category(name: "Lunch"),
+            Category(name: "Snacks"),
+            Category(name: "Dinner")
+        ]
+        
+        // Initialize recipes, referencing exampleCategories
+        let recipe = Recipe(
+            name: "Oatmeal Chocolate Chip and M&M Cookies",
+            instructions: "Cook them",
+            ingredients: "Cookies",
+            categories: [exampleCategories[0], exampleCategories[2]], // Use "All" and "Dessert"
+            servings: 10,
+            time: 60,
+            author: "Melanie Winder",
+            dateAdded: ISO8601DateFormatter().date(from: "2024-11-25T00:00:00Z") ?? Date(),
+            favorite: true,
+            notes: "These are the best"
+        )
+        
+        self.exampleRecipes = [recipe]
+        
+        // Add the recipe to the corresponding categories
+        recipe.categories.forEach { category in
+            category.recipes.append(recipe)
+        }
+    }
+    
+    
     
     var body: some View {
             NavigationSplitView {
                 List {
-                    // Create a list of distinct categories from all recipes
-                    ForEach(distinctCategories(), id: \.self) { category in
+                    ForEach(exampleCategories) { category in
                         NavigationLink {
                             // Filter the recipes by the selected category
-                            RecipeListView(category: category)
+                            List(category.recipes) { recipe in
+                                NavigationLink {
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        Markdown("# \(recipe.name)")
+                                        Markdown(recipe.instructions)
+                                        Markdown(recipe.ingredients)
+                                        Button("Edit Recipe") {
+                                            recipeToEdit = recipe
+                                        }
+                                        .buttonStyle(.bordered)
+                                        .padding(.top)
+                                    }
+                                    .padding()
+                                    .markdownTheme(.gitHub)
+                                } label: {
+                                    Text(recipe.name)
+                                }
+
+                            }
                         } label: {
-                            Text(category)
+                            Text(category.name)
                         }
                     }
                 }
             } content: {
-                // List of recipes (could filter by category here as well)
                 List {
-                    ForEach(viewModel.recipes, id: \.id) { recipe in
+                    ForEach(exampleRecipes) { recipe in
                         NavigationLink {
                             VStack(alignment: .leading, spacing: 10) {
                                 Markdown("# \(recipe.name)")
-                                Markdown(recipe.instructions.map(\.instructionStep).joined(separator: "\n\n"))
-                                Markdown(recipe.ingredients.map { "\($0.quantity) \($0.unit) \($0.name)" }.joined(separator: "\n"))
+                                Markdown(recipe.instructions)
+                                Markdown(recipe.ingredients)
+                                Button("Edit Recipe") {
+                                    recipeToEdit = recipe
+                                }
+                                .buttonStyle(.bordered)
+                                .padding(.top)
                             }
                             .padding()
                             .markdownTheme(.gitHub)
@@ -55,19 +115,15 @@ struct ContentView: View {
             } detail: {
                 Text("Select a recipe")
             }
-        }
-
-        // Get distinct categories across all recipes
-        private func distinctCategories() -> [String] {
-            // Flatten categories from all recipes and remove duplicates
-            let allCategories = viewModel.recipes.flatMap { $0.categories.map { $0.name } }
-            return Array(Set(allCategories)).sorted()
+            .sheet(item: $recipeToEdit) { recipe in
+                RecipeEditorView(recipe: recipe)
+            }
         }
 
 
     private func addItem() {
         withAnimation {
-//            let newRecipe = Recipe(name: "#\(Date())", ingredient: "some **ingredients**", instructions: "some *instructions*")
+//            let newRecipe = Recipe(name: "#\(Date())", ingredient: "some **ingredients**", instructions: "some                        *instructions*")
  //           modelContext.insert(newRecipe)
         }
     }
@@ -78,33 +134,6 @@ struct ContentView: View {
 //                modelContext.delete(viewModel.recipes[index])
 //            }
         }
-    }
-}
-
-struct RecipeListView: View {
-    var category: String
-    @Environment(RecipeViewModel.self) private var viewModel
-
-    var body: some View {
-        List {
-            ForEach(viewModel.recipes.filter { recipe in
-                // Filter recipes by category name
-                recipe.categories.contains { $0.name == category }
-            }, id: \.id) { recipe in
-                NavigationLink {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Markdown("# \(recipe.name)")
-                        Markdown(recipe.instructions.map(\.instructionStep).joined(separator: "\n\n"))
-                        Markdown(recipe.ingredients.map { "\($0.quantity) \($0.unit) \($0.name)" }.joined(separator: "\n"))
-                    }
-                    .padding()
-                    .markdownTheme(.gitHub)
-                } label: {
-                    Text(recipe.name)
-                }
-            }
-        }
-        .navigationTitle(category)
     }
 }
 
