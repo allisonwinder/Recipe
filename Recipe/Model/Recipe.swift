@@ -7,6 +7,22 @@
 import Foundation
 import SwiftData
 
+protocol RecipeDatabase {
+    var recipes: [Recipe] { get }
+    var categories: [Category] { get }
+    
+    mutating func editRecipe(for recipe: Recipe)
+    mutating func editCategory(for category: Category)
+    
+    mutating func addRecipe(for recipe: Recipe)
+    mutating func addCategory(for category: Category)
+    
+    mutating func deleteRecipe(for recipe: Recipe)
+    mutating func deleteCategory(for category: Category)
+    
+    mutating func toggleFavorite(for recipe: Recipe)
+}
+
 @Model
 class Recipe: Identifiable {
     @Attribute(.unique) var name: String
@@ -44,38 +60,39 @@ class Category: Identifiable {
     }
 }
 
-//@Model
-//class Ingredient: Identifiable {
-//    @Attribute(.unique) var id: UUID
-//    var name: String
-//    var quantity: Double
-//    var unit: String
-//    @Relationship var recipe: Recipe? // One-to-many: Recipe -> Ingredients
-//
-//    init(name: String, quantity: Double, unit: String, recipe: Recipe? = nil) {
-//        self.id = UUID()
-//        self.name = name
-//        self.quantity = quantity
-//        self.unit = unit
-//        self.recipe = recipe
-//    }
-//}
-//
-//@Model
-//class Instruction: Identifiable {
-//    @Attribute(.unique) var id: UUID
-//    var stepNumber: Int
-//    var instructionStep: String
-//    @Relationship var recipe: Recipe? // One-to-many: Recipe -> Instructions
-//
-//    init(stepNumber: Int, instructionStep: String, recipe: Recipe? = nil) {
-//        self.id = UUID()
-//        self.stepNumber = stepNumber
-//        self.instructionStep = instructionStep
-//        self.recipe = recipe
-//    }
-//}
+struct RecipeAppInformation: RecipeDatabase {
+    
+    var recipes = Data.theRecipes
+    var categories = Data.theCategories
+    
+    mutating func editRecipe(for recipe: Recipe) {
+        return
+    }
+    
+    mutating func editCategory(for category: Category) {
+        return
+    }
+    
+    mutating func addRecipe(for recipe: Recipe) {
+        return
+    }
+    
+    mutating func addCategory(for category: Category) {
+        return
+    }
+    
+    mutating func deleteRecipe(for recipe: Recipe) {
+        return
+    }
+    
+    mutating func deleteCategory(for category: Category) {
+        return
+    }
+    
+    mutating func toggleFavorite(for recipe: Recipe) {
+        return
+    }
+    
 
-
-
+}
 

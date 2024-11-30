@@ -23,22 +23,26 @@ class RecipeViewModel {
     }
     
     //MARK: - Model Access
-    private(set) var recipes: [Recipe] = []
+    private(set) var allRecipes: [Recipe] = []
+    private(set) var allCategories: [Category] = []
+    
+    // MARK: - Data Management
     
     private func fetchData() {
-        
-        try? modelContext.save()
         do {
-            let descriptor = FetchDescriptor<Recipe>(sortBy: [SortDescriptor(\.name)])
-            recipes = try modelContext.fetch(descriptor)
-            print("Recipes fetched: \(recipes)")
+            // Fetch all recipes
+            let recipeDescriptor = FetchDescriptor<Recipe>(sortBy: [SortDescriptor(\.name)])
+            allRecipes = try modelContext.fetch(recipeDescriptor)
             
-            for recipe in recipes {
-                print("Recipe: \(recipe.name), Categories: \(recipe.categories.map { $0.name })")
-            }
+            // Fetch all categories
+            let categoryDescriptor = FetchDescriptor<Category>(sortBy: [SortDescriptor(\.name)])
+            allCategories = try modelContext.fetch(categoryDescriptor)
+            
+            print("Recipes fetched: \(allRecipes.count)")
+            print("Categories fetched: \(allCategories.count)")
             
         } catch {
-            print("Failed to load recipes: \(error)")
+            print("Error fetching data: \(error)")
         }
     }
     
