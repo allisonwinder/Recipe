@@ -60,39 +60,39 @@ class Category: Identifiable {
     }
 }
 
-struct RecipeAppInformation: RecipeDatabase {
-    
-    var recipes = Data.theRecipes
-    var categories = Data.theCategories
-    
-    mutating func editRecipe(for recipe: Recipe) {
-        return
-    }
-    
-    mutating func editCategory(for category: Category) {
-        return
-    }
-    
-    mutating func addRecipe(for recipe: Recipe) {
-        return
-    }
-    
-    mutating func addCategory(for category: Category) {
-        return
-    }
-    
-    mutating func deleteRecipe(for recipe: Recipe) {
-        return
-    }
-    
-    mutating func deleteCategory(for category: Category) {
-        return
-    }
-    
-    mutating func toggleFavorite(for recipe: Recipe) {
-        return
-    }
-    
-
-}
+//struct RecipeAppInformation: RecipeDatabase {
+//    
+//    var recipes = Data.theRecipes
+//    var categories = Data.theCategories
+//    
+//    mutating func editRecipe(for recipe: Recipe) {
+//        return
+//    }
+//    
+//    mutating func editCategory(for category: Category) {
+//        return
+//    }
+//    
+//    mutating func addRecipe(for recipe: Recipe) {
+//        return
+//    }
+//    
+//    mutating func addCategory(for category: Category) {
+//        return
+//    }
+//    
+//    mutating func deleteRecipe(for recipe: Recipe) {
+//        return
+//    }
+//    
+//    mutating func deleteCategory(for category: Category) {
+//        return
+//    }
+//    
+//    mutating func toggleFavorite(for recipe: Recipe) {
+//        return
+//    }
+//    
+//
+//}
 

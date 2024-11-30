@@ -8,19 +8,16 @@
 import SwiftData
 import Foundation
 
-struct Data {
-    static var theCategories: [Category] = [
-        Category(name: "All"),
-        Category(name: "Appetizer"),
-        Category(name: "Breakfast"),
-        Category(name: "Dessert"),
-        Category(name: "Lunch"),
-        Category(name: "Snacks"),
-        Category(name: "Dinner")
-    ]
+func Data(context: ModelContext) {
+        let allCategory = Category(name: "All")
+        let appCategory = Category(name: "Appetizer")
+        let breakCategory = Category(name: "Breakfast")
+        let dessCategory = Category(name: "Dessert")
+        let lunchCategory = Category(name: "Lunch")
+        let snackCategory = Category(name: "Snacks")
+        let dinCategory = Category(name: "Dinner")
     
-    static var theRecipes: [Recipe] = {
-        var recipes = [
+        let cookieRecipe =
             Recipe(name: "Oatmeal Chocolate Chip and M&M Cookies",
                    instructions: "Cook them",
                    ingredients: """
@@ -28,22 +25,34 @@ struct Data {
                                     - 1 C M&Ms
                                     - 1 C Oats
                                 """,
-                   categories: [theCategories[0], theCategories[3]], // Use "All" and "Dessert"
+                   categories: [allCategory, dessCategory],
                    servings: 10,
                    time: 60,
                    author: "Melanie Winder",
                    dateAdded: ISO8601DateFormatter().date(from: "2024-11-25T00:00:00Z") ?? Date(),
                    favorite: true,
                    notes: "These are the best cookies for a crowd because they are good for kids")
-        ]
         
-        // Add recipes to their corresponding categories
-        recipes.forEach { recipe in
-            recipe.categories.forEach { category in
-                category.recipes.append(recipe)
-            }
-        }
-        
-        return recipes
-    }()
+    // Save the data to the context
+    context.insert(allCategory)
+    context.insert(appCategory)
+    context.insert(breakCategory)
+    context.insert(dessCategory)
+    context.insert(lunchCategory)
+    context.insert(snackCategory)
+    context.insert(dinCategory)
+    
+    allCategory.recipes.append(cookieRecipe)
+    dessCategory.recipes.append(cookieRecipe)
+    
+    context.insert(cookieRecipe)
+    
+    do {
+        try context.save()
+        print("Recipe and category relationship saved successfully!")
+    } catch {
+        print("Error saving data: \(error)")
+    }
+    
+    //try? context.save()
 }

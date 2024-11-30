@@ -19,6 +19,7 @@ class RecipeViewModel {
     
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
+        Data(context: modelContext)
         fetchData()
     }
     
@@ -26,7 +27,6 @@ class RecipeViewModel {
     private(set) var allRecipes: [Recipe] = []
     private(set) var allCategories: [Category] = []
     
-    // MARK: - Data Management
     
     private func fetchData() {
         do {
