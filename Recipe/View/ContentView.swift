@@ -80,8 +80,9 @@ struct ContentView: View {
         .sheet(item: $recipeToEdit) { recipe in
             RecipeEditorView(recipe: recipe)
         }
-        .sheet(item: $newRecipeToEdit) { _ in
-            RecipeEditorView(recipe: newRecipeToEdit!)
+        // Handle newRecipeToEdit as an Optional, with safe unwrapping
+        .sheet(item: $newRecipeToEdit) { recipe in
+            RecipeEditorView(recipe: recipe)
         }
     }
 
