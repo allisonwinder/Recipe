@@ -58,10 +58,21 @@ class RecipeViewModel {
             print ("Failed to load favorites")
         }
     }
+    
 
 
     
     //MARK: - User Intents
+    
+    func saveRecipe(_ recipe: Recipe) {
+        print("Made it to part 2")
+        do {
+            try modelContext.save()
+            print("saved")
+        } catch {
+            print("Error saving recipe: \(error)")
+        }
+    }
     
     
 }

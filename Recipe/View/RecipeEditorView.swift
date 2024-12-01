@@ -10,6 +10,8 @@ import SwiftData
 import MarkdownUI
 
 struct RecipeEditorView: View {
+    @Environment(RecipeViewModel.self) private var viewModel
+    @Environment(\.dismiss) private var dismiss
     @State var recipe: Recipe
 
     var body: some View {
@@ -34,7 +36,7 @@ struct RecipeEditorView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        // Save logic here
+                        saveRecipe(recipe)
                         dismiss()
                     }
                 }
@@ -47,6 +49,11 @@ struct RecipeEditorView: View {
         }
     }
 
-    @Environment(\.dismiss) private var dismiss
+
+    
+    private func saveRecipe(_ recipe: Recipe) {
+        viewModel.saveRecipe(recipe)
+        print("Made it to part one")
+    }
 }
 
