@@ -12,93 +12,86 @@ import MarkdownUI
 struct ContentView: View {
     @Environment(RecipeViewModel.self) private var viewModel
     @State private var recipeToEdit: Recipe?
-    
+    @State private var newRecipeToEdit: Recipe?  // State for the new recipe
+
     var body: some View {
-            NavigationSplitView {
-                List {
-                    ForEach(viewModel.allCategories) { category in
-                        NavigationLink {
-                            // Filter the recipes by the selected category
-                            List(category.recipes) { recipe in
-                                NavigationLink {
-                                    VStack(alignment: .leading, spacing: 10) {
-                                        Markdown("# \(recipe.name)")
-                                        Markdown(recipe.instructions)
-                                        Markdown(recipe.ingredients)
-                                        Button("Edit Recipe") {
-                                            recipeToEdit = recipe
-                                        }
-                                        .buttonStyle(.bordered)
-                                        .padding(.top)
+        NavigationSplitView {
+            List {
+                ForEach(viewModel.allCategories) { category in
+                    NavigationLink {
+                        // Filter the recipes by the selected category
+                        List(category.recipes) { recipe in
+                            NavigationLink {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Markdown("# \(recipe.name)")
+                                    Markdown(recipe.instructions)
+                                    Markdown(recipe.ingredients)
+                                    Button("Edit Recipe") {
+                                        recipeToEdit = recipe
                                     }
-                                    .padding()
-                                    .markdownTheme(.gitHub)
-                                } label: {
-                                    Text(recipe.name)
+                                    .buttonStyle(.bordered)
+                                    .padding(.top)
                                 }
-
+                                .padding()
+                                .markdownTheme(.gitHub)
+                            } label: {
+                                Text(recipe.name)
                             }
-                        } label: {
-                            Text(category.name)
                         }
+                    } label: {
+                        Text(category.name)
                     }
                 }
-            } content: {
-                List {
-                    ForEach(viewModel.allRecipes) { recipe in
-                        NavigationLink {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Markdown("# \(recipe.name)")
-                                Markdown(recipe.instructions)
-                                Markdown(recipe.ingredients)
-                                Button("Edit Recipe") {
-                                    recipeToEdit = recipe
-                                }
-                                .buttonStyle(.bordered)
-                                .padding(.top)
-                                
+            }
+        } content: {
+            List {
+                ForEach(viewModel.allRecipes) { recipe in
+                    NavigationLink {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Markdown("# \(recipe.name)")
+                            Markdown(recipe.instructions)
+                            Markdown(recipe.ingredients)
+                            Button("Edit Recipe") {
+                                recipeToEdit = recipe
                             }
-                            .padding()
-                            .markdownTheme(.gitHub)
-                        } label: {
-                            Text(recipe.name)
+                            .buttonStyle(.bordered)
+                            .padding(.top)
                         }
+                        .padding()
+                        .markdownTheme(.gitHub)
+                    } label: {
+                        Text(recipe.name)
                     }
                 }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        EditButton()
-                    }
-                    ToolbarItem {
-                        Button(action: addItem) {
-                            Label("Add Item", systemImage: "plus")
-                        }
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    EditButton()
+                }
+                ToolbarItem {
+                    Button(action: addNewRecipe) {
+                        Label("Add Recipe", systemImage: "plus")
                     }
                 }
-            } detail: {
-                Text("Select a recipe")
             }
-            .sheet(item: $recipeToEdit) { recipe in
-                RecipeEditorView(recipe: recipe)
-            }
+        } detail: {
+            Text("Select a recipe")
         }
-
-
-    private func addItem() {
-        withAnimation {
-//            let newRecipe = Recipe(name: "#\(Date())", ingredient: "some **ingredients**", instructions: "some                        *instructions*")
- //           modelContext.insert(newRecipe)
+        .sheet(item: $recipeToEdit) { recipe in
+            RecipeEditorView(recipe: recipe)
+        }
+        .sheet(item: $newRecipeToEdit) { _ in
+            RecipeEditorView(recipe: newRecipeToEdit!)
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-//            for index in offsets {
-//                modelContext.delete(viewModel.recipes[index])
-//            }
-        }
+    private func addNewRecipe() {
+        // Create a new recipe with default values or empty fields
+        let newRecipe = Recipe(name: "", instructions: "", ingredients: "", categories: [], servings: 1, dateAdded: Date(), favorite: false,  notes: "" )
+        newRecipeToEdit = newRecipe // Show the new recipe editor sheet
     }
 }
+
 
 #Preview {
     ContentView()
