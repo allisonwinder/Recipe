@@ -14,6 +14,7 @@ struct RecipeEditorView: View {
     @Environment(RecipeViewModel.self) private var viewModel
     @State var recipe: Recipe
     @State private var selectedCategory: Category? = nil
+    @State private var newCategoryName: String = ""
 
     var body: some View {
         NavigationView {
@@ -57,6 +58,17 @@ struct RecipeEditorView: View {
                         .onChange(of: selectedCategory) {
                             addCategory(selectedCategory)
                         }
+                        
+                        //New Category Input
+                        TextField("New Category Name", text: $newCategoryName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding(.top)
+                        
+                        Button(action: addNewCategory) {
+                            Text("Add New Category")
+                                .foregroundStyle(.blue)
+                        }
+                        .padding(.top)
 
                     }
                     
@@ -100,6 +112,15 @@ struct RecipeEditorView: View {
             recipe.categories.append(category)
             category.recipes.append(recipe)
         }
+    }
+    
+    private func addNewCategory() {
+        guard !newCategoryName.isEmpty else { return }
+        
+        let newCategory = Category(name: newCategoryName, recipes: [recipe])
+        recipe.categories.append(newCategory)
+        newCategoryName = ""
+        
     }
 
     // Save the recipe and update the model

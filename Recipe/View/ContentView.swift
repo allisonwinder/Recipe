@@ -11,6 +11,7 @@ import MarkdownUI
 
 struct ContentView: View {
     @Environment(RecipeViewModel.self) private var viewModel
+    @State private var isCategoryManagerPresented: Bool = false
     @State private var recipeToEdit: Recipe?
     @State private var newRecipeToEdit: Recipe?  // State for the new recipe
 
@@ -73,6 +74,13 @@ struct ContentView: View {
                         Label("Add Recipe", systemImage: "plus")
                     }
                 }
+                ToolbarItem {
+                    Button {
+                        isCategoryManagerPresented = true
+                    } label: {
+                        Label("Manage Categories", systemImage: "tag")
+                    }
+                }
             }
         } detail: {
             Text("Select a recipe")
@@ -83,6 +91,9 @@ struct ContentView: View {
         // Handle newRecipeToEdit as an Optional, with safe unwrapping
         .sheet(item: $newRecipeToEdit) { recipe in
             RecipeEditorView(recipe: recipe)
+        }
+        .sheet(isPresented: $isCategoryManagerPresented) {
+            CategoryManagerView()
         }
     }
 

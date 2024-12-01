@@ -59,8 +59,8 @@ class RecipeViewModel {
         }
     }
     
-
-
+    
+    
     
     //MARK: - User Intents
     
@@ -74,5 +74,41 @@ class RecipeViewModel {
         }
     }
     
+//    func loadCategories() {
+//        // Fetch all categories from the database
+//        let request = FetchRequest<Category>()
+//        allCategories = try! modelContext.fetch(request)
+//    }
+        
+        
+        func addCategory(name: String) {
+            guard !name.isEmpty, !allCategories.contains(where: { $0.name == name }) else { return }
+            let newCategory = Category(name: name)
+            modelContext.insert(newCategory)
+            saveContext()
+            //loadCategories()
+        }
+        
+        func updateCategory(category: Category, newName: String) {
+            guard !newName.isEmpty else { return }
+            category.name = newName
+            saveContext()
+            //loadCategories()
+        }
+        
+        func deleteCategory(category: Category) {
+            modelContext.delete(category)
+            saveContext()
+            //loadCategories()
+        }
+        
+        func saveContext() {
+            do {
+                try modelContext.save()
+            } catch {
+                print("Error saving context: \(error)")
+            }
+        }
+        
+    }
     
-}
