@@ -23,24 +23,23 @@ struct ContentView: View {
                         // Filter the recipes by the selected category
                         List(category.recipes) { recipe in
                             NavigationLink {
-                                VStack(alignment: .leading, spacing: 10) {
-                                    Markdown("# \(recipe.name)")
-                                    Markdown(recipe.instructions)
-                                    Markdown(recipe.ingredients)
-                                    Button("Edit Recipe") {
-                                        recipeToEdit = recipe
-                                    }
-                                    .buttonStyle(.bordered)
-                                    .padding(.top)
-                                }
-                                .padding()
-                                .markdownTheme(.gitHub)
+                                RecipeDetailView(recipe: recipe)
                             } label: {
                                 Text(recipe.name)
                             }
+
                         }
                     } label: {
                         Text(category.name)
+                    }
+                }
+            }
+            .toolbar {
+                ToolbarItem {
+                    Button {
+                        isCategoryManagerPresented = true
+                    } label: {
+                        Label("Manage Categories", systemImage: "tag")
                     }
                 }
             }
@@ -48,18 +47,7 @@ struct ContentView: View {
             List {
                 ForEach(viewModel.allRecipes) { recipe in
                     NavigationLink {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Markdown("# \(recipe.name)")
-                            Markdown(recipe.instructions)
-                            Markdown(recipe.ingredients)
-                            Button("Edit Recipe") {
-                                recipeToEdit = recipe
-                            }
-                            .buttonStyle(.bordered)
-                            .padding(.top)
-                        }
-                        .padding()
-                        .markdownTheme(.gitHub)
+                        RecipeDetailView(recipe: recipe)
                     } label: {
                         Text(recipe.name)
                     }
@@ -72,13 +60,6 @@ struct ContentView: View {
                 ToolbarItem {
                     Button(action: addNewRecipe) {
                         Label("Add Recipe", systemImage: "plus")
-                    }
-                }
-                ToolbarItem {
-                    Button {
-                        isCategoryManagerPresented = true
-                    } label: {
-                        Label("Manage Categories", systemImage: "tag")
                     }
                 }
             }
@@ -98,9 +79,8 @@ struct ContentView: View {
     }
 
     private func addNewRecipe() {
-        // Create a new recipe with default values or empty fields
         let newRecipe = Recipe(name: "", instructions: "", ingredients: "", categories: [], servings: 1, dateAdded: Date(), favorite: false,  notes: "" )
-        newRecipeToEdit = newRecipe // Show the new recipe editor sheet
+        newRecipeToEdit = newRecipe
     }
 }
 

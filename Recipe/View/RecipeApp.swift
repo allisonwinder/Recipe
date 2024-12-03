@@ -4,6 +4,7 @@
 //
 //  Created by IS 543 on 11/15/24.
 //
+// icon is from https://www.flaticon.com/free-icon/cooking_1065711?term=recipe&page=1&position=10&origin=search&related_id=1065711 and adjusted to the correct size in a sizer
 
 import SwiftUI
 import SwiftData

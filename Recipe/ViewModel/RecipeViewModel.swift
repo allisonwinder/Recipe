@@ -30,6 +30,8 @@ class RecipeViewModel {
     
     private func fetchData() {
         do {
+            
+            try modelContext.save()
             // Fetch all recipes
             let recipeDescriptor = FetchDescriptor<Recipe>(sortBy: [SortDescriptor(\.name)])
             allRecipes = try modelContext.fetch(recipeDescriptor)
@@ -86,6 +88,7 @@ class RecipeViewModel {
             let newCategory = Category(name: name)
             modelContext.insert(newCategory)
             saveContext()
+            fetchData()
             //loadCategories()
         }
         
@@ -99,6 +102,7 @@ class RecipeViewModel {
         func deleteCategory(category: Category) {
             modelContext.delete(category)
             saveContext()
+            fetchData()
             //loadCategories()
         }
         
