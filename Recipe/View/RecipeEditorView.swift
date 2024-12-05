@@ -15,6 +15,12 @@ struct RecipeEditorView: View {
     @State var recipe: Recipe
     @State private var selectedCategory: Category? = nil
     @State private var newCategoryName: String = ""
+    @State private var originalRecipe: Recipe // Backup of the original recipe
+
+    init(recipe: Recipe) {
+        _recipe = State(initialValue: recipe)
+        _originalRecipe = State(initialValue: recipe) // Initialize backup
+    }
 
     var body: some View {
         NavigationView {
@@ -29,7 +35,7 @@ struct RecipeEditorView: View {
                             TextField("Author", text: $recipe.author)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                            Stepper("Servings: \(recipe.servings)", value: $recipe.servings, in: 1...100)
+                            Stepper("Servings: \(recipe.servings)", value: $recipe.servings, in: 0...100)
 
                             Stepper("Prep Time: \(recipe.time) minutes", value: $recipe.time, in: 0...720)
 
@@ -120,13 +126,13 @@ struct RecipeEditorView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        saveRecipe()
+                        saveRecipe(unsavedRecipe: recipe)
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        dismiss()
+                        cancelEditing() // Call to cancel
                     }
                 }
             }
@@ -158,10 +164,23 @@ struct RecipeEditorView: View {
     }
 
     // Save the recipe and update the model
-    private func saveRecipe() {
-        viewModel.saveRecipe(recipe)
+    private func saveRecipe(unsavedRecipe: Recipe) {
+        if case unsavedRecipe.name = "" {
+            dismiss()
+        } else {
+            viewModel.saveRecipe(unsavedRecipe)
+        }
+        
+    }
+
+    // Handle the cancel action: revert changes to the original recipe
+    private func cancelEditing() {
+        recipe = originalRecipe // Restore the original recipe
+        dismiss() // Dismiss the editor view
     }
 }
+
+
 
 
 

@@ -20,10 +20,14 @@ func Data(context: ModelContext) {
     let cookieRecipe = Recipe(
         name: "Oatmeal Chocolate Chip and M&M Cookies",
         instructions: """
-            Preheat oven to 375°F. In a large bowl, cream together the butter, sugars, and vanilla until light and fluffy. 
-            Beat in the eggs one at a time. In another bowl, combine the flour, baking soda, and salt; gradually add to the creamed mixture. 
-            Stir in the oats, chocolate chips, and M&Ms. Drop by rounded spoonfuls onto an ungreased baking sheet. 
-            Bake for 9-12 minutes or until golden brown. Allow to cool on baking sheet for 2 minutes, then transfer to wire racks to cool completely.
+            Preheat oven to 375°F. 
+            In a large bowl, cream together the butter, sugars, and vanilla until light and fluffy. 
+            Beat in the eggs one at a time. 
+            In another bowl, combine the flour, baking soda, and salt; gradually add to the creamed mixture. 
+            Stir in the oats, chocolate chips, and M&Ms. 
+            Drop by rounded spoonfuls onto an ungreased baking sheet. 
+            Bake for 9-12 minutes or until golden brown. 
+            Allow to cool on baking sheet for 2 minutes, then transfer to wire racks to cool completely.
         """,
         ingredients: """
             - 1 cup butter flavored shortening (regular works fine)
@@ -51,8 +55,10 @@ func Data(context: ModelContext) {
         name: "Chunky Chipper Cookies",
         instructions: """
             Preheat oven to 375°F. 
-            In a large bowl, cream together the butter, sugars, and vanilla. Beat peanut butter, shortening, eggs, sugar, vanilla, and water until creamy. 
-            Add sifted dry ingredients and blend well. Stir in chocolate chips. 
+            In a large bowl, cream together the butter, sugars, and vanilla. 
+            Beat peanut butter, shortening, eggs, sugar, vanilla, and water until creamy. 
+            Add sifted dry ingredients and blend well. 
+            Stir in chocolate chips. 
             Bake 10-12 min at 350.
         """,
         ingredients: """
@@ -104,7 +110,8 @@ func Data(context: ModelContext) {
     let hamFriedRiceRecipe = Recipe(
         name: "Ham Fried Rice",
         instructions: """
-            Cook rice the day before. Spread out and dry (if no time, that’s okay). Heat oil and add rice. Stir a few min. 
+            Cook rice the day before. 
+            Spread out and dry (if no time, that’s okay). Heat oil and add rice. Stir a few min. 
             Add onions, ham, and veg. Stir and heat. 
             Carefully pour beaten egg and stir until egg is cooked
         """,
@@ -129,8 +136,12 @@ func Data(context: ModelContext) {
         name: "Broccoli and Cheese",
         instructions: """
             Peel and slice thick stems from broccoli. 
-            Bring ¾ C water to simmer over medium low heat. Add stems and florets: cook, covered, until bright green, 4 min. 
-            Stir in olive oil, garlic, salt, and red pepper. Cook 4 min. Turn off heat. Stir in vinegar.
+            Bring ¾ C water to simmer over medium low heat. 
+            Add stems and florets: cook, covered, until bright green, 4 min. 
+            Stir in olive oil, garlic, salt, and red pepper. 
+            Cook 4 min. 
+            Turn off heat. 
+            Stir in vinegar.
         """,
         ingredients: """
             - 1 1/2 lb broccoli
@@ -152,11 +163,16 @@ func Data(context: ModelContext) {
     let zucchiniBreadRecipe = Recipe(
         name: "Mom's Zucchini Bread",
         instructions: """
-            Grease and flour two 8 x 4 inch pans. Preheat oven to 325 degrees F (165 degrees C). 
-            Sift flour, salt, baking powder, soda, and cinnamon together in a bowl. Beat eggs, oil, vanilla, and sugar together in a large bowl. Add sifted ingredients to the creamed mixture, and beat well. 
+            Grease and flour two 8 x 4 inch pans. 
+            Preheat oven to 325 degrees F (165 degrees C). 
+            Sift flour, salt, baking powder, soda, and cinnamon together in a bowl. 
+            Beat eggs, oil, vanilla, and sugar together in a large bowl. 
+            Add sifted ingredients to the creamed mixture, and beat well. 
             Stir in zucchini and nuts until well combined. 
-            Pour batter into prepared pans. Bake for 40 to 60 minutes, or until tester inserted in the center comes out clean. 
-            Cool in pan on rack for 20 minutes. Remove bread from pan, and completely cool.
+            Pour batter into prepared pans. 
+            Bake for 40 to 60 minutes, or until tester inserted in the center comes out clean. 
+            Cool in pan on rack for 20 minutes. 
+            Remove bread from pan, and completely cool.
         """,
         ingredients: """
             - 3 cups all purpose flour
