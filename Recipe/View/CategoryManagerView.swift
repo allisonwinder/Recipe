@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CategoryManagerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -44,6 +45,7 @@ struct CategoryManagerView: View {
                     Button {
                         viewModel.addCategory(name: newCategoryName)
                         newCategoryName = ""
+
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .foregroundColor(.blue)

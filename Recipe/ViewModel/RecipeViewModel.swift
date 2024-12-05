@@ -21,6 +21,7 @@ class RecipeViewModel {
         self.modelContext = modelContext
         Data(context: modelContext)
         fetchData()
+        fetchFavorites()
     }
     
     //MARK: - Model Access
@@ -56,6 +57,7 @@ class RecipeViewModel {
                                                      sortBy: [SortDescriptor(\.name)])
             
             favorites = try modelContext.fetch(descriptor)
+            print("Favorites fetched: \(favorites.count)")
         } catch {
             print ("Failed to load favorites")
         }
@@ -67,7 +69,6 @@ class RecipeViewModel {
     //MARK: - User Intents
     
     func saveRecipe(_ recipe: Recipe) {
-        print("Made it to part 2")
         do {
             try modelContext.save()
             print("saved")
@@ -75,12 +76,6 @@ class RecipeViewModel {
             print("Error saving recipe: \(error)")
         }
     }
-    
-//    func loadCategories() {
-//        // Fetch all categories from the database
-//        let request = FetchRequest<Category>()
-//        allCategories = try! modelContext.fetch(request)
-//    }
         
         
         func addCategory(name: String) {
@@ -89,21 +84,19 @@ class RecipeViewModel {
             modelContext.insert(newCategory)
             saveContext()
             fetchData()
-            //loadCategories()
         }
         
         func updateCategory(category: Category, newName: String) {
             guard !newName.isEmpty else { return }
             category.name = newName
             saveContext()
-            //loadCategories()
+            fetchData()
         }
         
         func deleteCategory(category: Category) {
             modelContext.delete(category)
             saveContext()
             fetchData()
-            //loadCategories()
         }
         
         func saveContext() {
@@ -113,6 +106,24 @@ class RecipeViewModel {
                 print("Error saving context: \(error)")
             }
         }
-        
+    
+    @MainActor
+    func toggleFavorite(recipe: Recipe) {
+        recipe.favorite.toggle()
+        do {
+            print(modelContext.hasChanges)
+            try modelContext.save()
+            print(modelContext.hasChanges)
+            saveContext()
+            saveRecipe(recipe)
+        } catch {
+            print("Error saving context: \(error)")
+        }
+        fetchData()
+        fetchFavorites()
     }
+
+
+        
+}
     

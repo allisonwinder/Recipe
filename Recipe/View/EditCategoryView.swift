@@ -10,7 +10,7 @@ import SwiftUI
 struct EditCategoryView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(RecipeViewModel.self) private var viewModel
-    @State var category: Category
+    @Bindable var category: Category
     @State private var newName: String = ""
 
     var body: some View {
