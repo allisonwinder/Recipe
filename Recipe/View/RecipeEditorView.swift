@@ -19,69 +19,106 @@ struct RecipeEditorView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: 20) {
                     // Recipe Information Section
-                    Section(header: Text("Recipe Info")) {
-                        TextField("Name", text: $recipe.name)
-                        TextField("Author", text: $recipe.author)
-                        Stepper("Servings: \(recipe.servings)", value: $recipe.servings, in: 1...100)
-                        TextField("Ingredients", text: $recipe.ingredients)
-                        TextEditor(text: $recipe.instructions)
-                            .frame(height: 200)
-                            .border(Color.gray, width: 1)
+                    GroupBox(label: Label("Recipe Info", systemImage: "info.circle")) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            TextField("Recipe Name", text: $recipe.name)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                            TextField("Author", text: $recipe.author)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                            Stepper("Servings: \(recipe.servings)", value: $recipe.servings, in: 1...100)
+
+                            Stepper("Prep Time: \(recipe.time) minutes", value: $recipe.time, in: 0...720)
+
+                            VStack(alignment: .leading) {
+                                Text("Ingredients")
+                                    .font(.headline)
+                                TextEditor(text: $recipe.ingredients)
+                                    .frame(height: 150)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                    )
+                                    .padding(.top, 5)
+                            }
+
+                            VStack(alignment: .leading) {
+                                Text("Instructions")
+                                    .font(.headline)
+                                TextEditor(text: $recipe.instructions)
+                                    .frame(height: 200)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                    )
+                                    .padding(.top, 5)
+                            }
+                        }
+                        .padding()
                     }
-                    
+
                     // Categories Section
-                    Section(header: Text("Categories")) {
-                        // List of pre-existing categories associated with the recipe
-                        ForEach(recipe.categories) { category in
-                            HStack {
-                                Text(category.name)
-                                Spacer()
-                                Button(action: {
-                                    removeCategory(category)
-                                }) {
-                                    Image(systemName: "minus.circle.fill")
-                                        .foregroundColor(.red)
+                    GroupBox(label: Label("Categories", systemImage: "tag")) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(recipe.categories) { category in
+                                HStack {
+                                    Text(category.name)
+                                    Spacer()
+                                    Button(action: {
+                                        removeCategory(category)
+                                    }) {
+                                        Image(systemName: "minus.circle.fill")
+                                            .foregroundColor(.red)
+                                    }
                                 }
                             }
-                        }
-                        
-                        // Drop-down Picker to add a new category
-                        Picker("Add Category", selection: $selectedCategory) {
-                            Text("Select Category").tag(nil as Category?)  // First option with nil
-                            ForEach(viewModel.allCategories) { category in
-                                Text(category.name).tag(category as Category?)
+
+                            Picker("Add Category", selection: $selectedCategory) {
+                                Text("Select Category").tag(nil as Category?)
+                                ForEach(viewModel.allCategories) { category in
+                                    Text(category.name).tag(category as Category?)
+                                }
+                            }
+                            .pickerStyle(MenuPickerStyle())
+                            .onChange(of: selectedCategory) {
+                                if let selectedCategory = selectedCategory {
+                                    addCategory(selectedCategory)
+                                }
+                            }
+
+                            HStack {
+                                TextField("New Category Name", text: $newCategoryName)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                Button("Add") {
+                                    addNewCategory()
+                                }
+                                .buttonStyle(.borderedProminent)
                             }
                         }
-                        .pickerStyle(MenuPickerStyle())  // Drop-down style
-                        .onChange(of: selectedCategory) {
-                            addCategory(selectedCategory)
-                        }
-                        
-                        //New Category Input
-                        TextField("New Category Name", text: $newCategoryName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.top)
-                        
-                        Button(action: addNewCategory) {
-                            Text("Add New Category")
-                                .foregroundStyle(.blue)
-                        }
-                        .padding(.top)
-
+                        .padding()
                     }
-                    
+
                     // Additional Info Section
-                    Section(header: Text("Additional Info")) {
-                        Toggle("Favorite", isOn: $recipe.favorite)
-                        DatePicker("Date Added", selection: $recipe.dateAdded, displayedComponents: .date)
-                        TextField("Notes", text: $recipe.notes)
+                    GroupBox(label: Label("Additional Info", systemImage: "ellipsis.circle")) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Toggle("Favorite", isOn: $recipe.favorite)
+
+                            DatePicker("Date Added", selection: $recipe.dateAdded, displayedComponents: .date)
+
+                            TextField("Notes", text: $recipe.notes)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                        }
+                        .padding()
                     }
                 }
                 .padding()
             }
-            .navigationTitle("Edit Recipe")
+            .navigationTitle(
+                Text("Recipe Editor")
+            )
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
@@ -113,21 +150,22 @@ struct RecipeEditorView: View {
             category.recipes.append(recipe)
         }
     }
-    
+
     private func addNewCategory() {
         guard !newCategoryName.isEmpty else { return }
-        
+
         let newCategory = Category(name: newCategoryName, recipes: [recipe])
         recipe.categories.append(newCategory)
         newCategoryName = ""
-        
     }
 
     // Save the recipe and update the model
     private func saveRecipe() {
-        viewModel.saveRecipe(recipe)  // Call the view model's save function to persist the recipe
+        viewModel.saveRecipe(recipe)
     }
 }
+
+
 
 
 

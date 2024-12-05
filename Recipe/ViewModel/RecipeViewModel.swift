@@ -69,12 +69,21 @@ class RecipeViewModel {
     //MARK: - User Intents
     
     func saveRecipe(_ recipe: Recipe) {
+        
+        let allCategory = allCategories[0]
+        
+        if !recipe.categories.contains(allCategory) {
+            recipe.categories.append(allCategory)
+        }
+        
         do {
             try modelContext.save()
             print("saved")
         } catch {
             print("Error saving recipe: \(error)")
         }
+        fetchData()
+        fetchFavorites()
     }
         
         
@@ -86,12 +95,19 @@ class RecipeViewModel {
             fetchData()
         }
         
-        func updateCategory(category: Category, newName: String) {
-            guard !newName.isEmpty else { return }
-            category.name = newName
-            saveContext()
-            fetchData()
+
+    
+    func deleteRecipe(_ recipe: Recipe) {
+        // Remove the recipe from its categories
+        for category in recipe.categories {
+            category.recipes.removeAll { $0.id == recipe.id }
         }
+        // Delete the recipe from the model context
+        modelContext.delete(recipe)
+        saveContext()
+        fetchData() // Refresh the list
+    }
+
         
         func deleteCategory(category: Category) {
             modelContext.delete(category)
@@ -107,7 +123,6 @@ class RecipeViewModel {
             }
         }
     
-    @MainActor
     func toggleFavorite(recipe: Recipe) {
         recipe.favorite.toggle()
         do {
@@ -115,12 +130,18 @@ class RecipeViewModel {
             try modelContext.save()
             print(modelContext.hasChanges)
             saveContext()
-            saveRecipe(recipe)
         } catch {
             print("Error saving context: \(error)")
         }
         fetchData()
         fetchFavorites()
+    }
+    
+    func updateCategory(category: Category, newName: String) {
+        guard !newName.isEmpty else { return }
+        category.name = newName
+        saveContext()
+        fetchData()
     }
 
 

@@ -14,6 +14,20 @@ struct ContentView: View {
     @State private var isCategoryManagerPresented: Bool = false
     @State private var recipeToEdit: Recipe?
     @State private var newRecipeToEdit: Recipe?  // State for the new recipe
+    @State private var searchText: String = ""
+    @State private var isEditing: Bool = false // Track edit mode
+
+    private var filteredRecipes: [Recipe] {
+        if searchText.isEmpty {
+            return viewModel.allRecipes
+        } else {
+            return viewModel.allRecipes.filter { recipe in
+                recipe.name.localizedCaseInsensitiveContains(searchText) ||
+                recipe.ingredients.localizedCaseInsensitiveContains(searchText) ||
+                recipe.instructions.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -22,74 +36,7 @@ struct ContentView: View {
                     NavigationLink {
                         List(viewModel.favorites) { recipe in
                             NavigationLink {
-                                VStack(alignment: .leading, spacing: 20) {
-                                    // Recipe Name
-                                    Markdown("# \(recipe.name)")
-                                        .font(.largeTitle)
-                                        .padding(.bottom, 10)
-                                    
-                                    // Recipe Metadata
-                                    HStack(spacing: 10) {
-                                        Text("Author: \(recipe.author)")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Text("Servings: \(recipe.servings)")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Text("Time: \(recipe.time) min")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Text("Date Added: \(recipe.dateAdded.formatted())")
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                        Spacer()
-                                        // Favorite Toggle
-                                        Button(action: {
-                                            toggleFavorite(for: recipe)
-                                        }) {
-                                            Image(systemName: recipe.favorite ? "heart.fill" : "heart")
-                                                .foregroundColor(recipe.favorite ? .red : .gray)
-                                                .imageScale(.large)
-                                        }
-                                        .buttonStyle(.borderless)
-                                    }
-                                    .padding(.bottom, 10)
-                                    
-                                    // Categories as Chips
-                                    if !recipe.categories.isEmpty {
-                                        ScrollView(.horizontal, showsIndicators: false) {
-                                            HStack(spacing: 10) {
-                                                ForEach(recipe.categories) { category in
-                                                    Text(category.name)
-                                                        .font(.caption)
-                                                        .padding(.horizontal, 10)
-                                                        .padding(.vertical, 5)
-                                                        .background(Capsule().fill(.blue.opacity(0.2)))
-                                                        .foregroundColor(.blue)
-                                                }
-                                            }
-                                            .padding(.bottom, 10)
-                                        }
-                                    }
-                                    
-                                    // Ingredients Section
-                                    Markdown("### Ingredients")
-                                    Markdown(recipe.ingredients) // Directly display the ingredients string
-                                        .padding(.bottom, 10)
-                                    
-                                    // Instructions Section
-                                    Markdown("### Instructions")
-                                    Markdown(recipe.instructions) // Directly display the instructions string
-                                    
-                                    // Edit Button
-                                    Button("Edit Recipe") {
-                                        recipeToEdit = recipe
-                                    }
-                                    .buttonStyle(.bordered)
-                                    .padding(.top)
-                                }
-                                .padding()
-                                .markdownTheme(.gitHub)
+                                recipeDetailView(recipe: recipe)
                             } label: {
                                 Text(recipe.name)
                             }
@@ -98,87 +45,22 @@ struct ContentView: View {
                         Text("Favorites")
                     }
                 }
-                ForEach(viewModel.allCategories) { category in
-                    NavigationLink {
-                        // Filter the recipes by the selected category
-                        List(category.recipes) { recipe in
-                            NavigationLink {
-                                VStack(alignment: .leading, spacing: 20) {
-                                    // Recipe Name
-                                    Markdown("# \(recipe.name)")
-                                        .font(.largeTitle)
-                                        .padding(.bottom, 10)
-                                    
-                                    // Recipe Metadata
-                                    HStack(spacing: 10) {
-                                        Text("Author: \(recipe.author)")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Text("Servings: \(recipe.servings)")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Text("Time: \(recipe.time) min")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Text("Date Added: \(recipe.dateAdded.formatted())")
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                        Spacer()
-                                        // Favorite Toggle
-                                        Button(action: {
-                                            toggleFavorite(for: recipe)
-                                        }) {
-                                            Image(systemName: recipe.favorite ? "heart.fill" : "heart")
-                                                .foregroundColor(recipe.favorite ? .red : .gray)
-                                                .imageScale(.large)
-                                        }
-                                        .buttonStyle(.borderless)
-                                    }
-                                    .padding(.bottom, 10)
-                                    
-                                    // Categories as Chips
-                                    if !recipe.categories.isEmpty {
-                                        ScrollView(.horizontal, showsIndicators: false) {
-                                            HStack(spacing: 10) {
-                                                ForEach(recipe.categories) { category in
-                                                    Text(category.name)
-                                                        .font(.caption)
-                                                        .padding(.horizontal, 10)
-                                                        .padding(.vertical, 5)
-                                                        .background(Capsule().fill(.blue.opacity(0.2)))
-                                                        .foregroundColor(.blue)
-                                                }
-                                            }
-                                            .padding(.bottom, 10)
-                                        }
-                                    }
-                                    
-                                    // Ingredients Section
-                                    Markdown("### Ingredients")
-                                    Markdown(recipe.ingredients) // Directly display the ingredients string
-                                        .padding(.bottom, 10)
-                                    
-                                    // Instructions Section
-                                    Markdown("### Instructions")
-                                    Markdown(recipe.instructions) // Directly display the instructions string
-                                    
-                                    // Edit Button
-                                    Button("Edit Recipe") {
-                                        recipeToEdit = recipe
-                                    }
-                                    .buttonStyle(.bordered)
-                                    .padding(.top)
+                Section(header: Text("Other Categories")) {
+                    ForEach(viewModel.allCategories) { category in
+                        NavigationLink {
+                            List(category.recipes) { recipe in
+                                NavigationLink {
+                                    recipeDetailView(recipe: recipe)
+                                } label: {
+                                    Text(recipe.name)
                                 }
-                                .padding()
-                                .markdownTheme(.gitHub)
-                            } label: {
-                                Text(recipe.name)
                             }
+                        } label: {
+                            Text(category.name)
                         }
-                    } label: {
-                        Text(category.name)
                     }
                 }
+
             }
             .toolbar {
                 ToolbarItem {
@@ -191,86 +73,32 @@ struct ContentView: View {
             }
         } content: {
             List {
-                ForEach(viewModel.allRecipes) { recipe in
-                    NavigationLink {
-                        //RecipeDetailView(recipe: recipe)
-                        VStack(alignment: .leading, spacing: 20) {
-                            // Recipe Name
-                            Markdown("# \(recipe.name)")
-                                .font(.largeTitle)
-                                .padding(.bottom, 10)
-                            
-                            // Recipe Metadata
-                            HStack(spacing: 10) {
-                                Text("Author: \(recipe.author)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Text("Servings: \(recipe.servings)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Text("Time: \(recipe.time) min")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                        Text("Date Added: \(recipe.dateAdded.formatted())")
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                
-                                Spacer()
-                                
-                                Button(action: {
-                                    toggleFavorite(for: recipe)
-                                }) {
-                                    Image(systemName: recipe.favorite ? "heart.fill" : "heart")
-                                        .foregroundColor(recipe.favorite ? .red : .gray)
-                                        .imageScale(.large)
-                                }
-                                .buttonStyle(.borderless)
+                ForEach(filteredRecipes) { recipe in
+                    if isEditing {
+                        HStack {
+                            Button(action: {
+                                deleteRecipe(recipe)
+                            }) {
+                                Image(systemName: "minus.circle.fill")
+                                    .foregroundColor(.red)
                             }
-                            .padding(.bottom, 10)
-                            
-                            // Categories as Chips
-                            if !recipe.categories.isEmpty {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 10) {
-                                        ForEach(recipe.categories) { category in
-                                            Text(category.name)
-                                                .font(.caption)
-                                                .padding(.horizontal, 10)
-                                                .padding(.vertical, 5)
-                                                .background(Capsule().fill(.blue.opacity(0.2)))
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                    .padding(.bottom, 10)
-                                }
-                            }
-                            
-                            // Ingredients Section
-                            Markdown("### Ingredients")
-                            Markdown(recipe.ingredients) // Directly display the ingredients string
-                                .padding(.bottom, 10)
-                            
-                            // Instructions Section
-                            Markdown("### Instructions")
-                            Markdown(recipe.instructions) // Directly display the instructions string
-                            
-                            // Edit Button
-                            Button("Edit Recipe") {
-                                recipeToEdit = recipe
-                            }
-                            .buttonStyle(.bordered)
-                            .padding(.top)
+                            Text(recipe.name)
                         }
-                        .padding()
-                        .markdownTheme(.gitHub)
-                    } label: {
-                        Text(recipe.name)
+                    } else {
+                        NavigationLink {
+                            recipeDetailView(recipe: recipe)
+                        } label: {
+                            Text(recipe.name)
+                        }
                     }
                 }
+                .onDelete(perform: isEditing ? deleteRecipes : nil)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                    Button(isEditing ? "Done" : "Edit") {
+                        isEditing.toggle()
+                    }
                 }
                 ToolbarItem {
                     Button(action: addNewRecipe) {
@@ -278,6 +106,7 @@ struct ContentView: View {
                     }
                 }
             }
+            .searchable(text: $searchText)
         } detail: {
             Text("Select a recipe")
         }
@@ -298,8 +127,92 @@ struct ContentView: View {
         newRecipeToEdit = newRecipe
     }
     
+    private func deleteRecipe(_ recipe: Recipe) {
+        viewModel.deleteRecipe(recipe)
+    }
+    
+    private func deleteRecipes(at offsets: IndexSet) {
+        let recipesToDelete = offsets.map { filteredRecipes[$0] }
+        for recipe in recipesToDelete {
+            deleteRecipe(recipe)
+        }
+    }
+    
     private func toggleFavorite(for recipe: Recipe) {
         viewModel.toggleFavorite(recipe: recipe)
+    }
+    
+    private func recipeDetailView(recipe: Recipe) -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Recipe Name
+            Markdown("# \(recipe.name)")
+                .font(.largeTitle)
+                .padding(.bottom, 10)
+            
+            // Recipe Metadata
+            HStack(spacing: 10) {
+                Text("Author: \(recipe.author)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text("Servings: \(recipe.servings)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text("Time: \(recipe.time) min")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                        Text("Date Added: \(recipe.dateAdded.formatted())")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                Button(action: {
+                    toggleFavorite(for: recipe)
+                }) {
+                    Image(systemName: recipe.favorite ? "heart.fill" : "heart")
+                        .foregroundColor(recipe.favorite ? .red : .gray)
+                        .imageScale(.large)
+                }
+                .buttonStyle(.borderless)
+            }
+            .padding(.bottom, 10)
+            
+            // Categories as Chips
+            if !recipe.categories.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(recipe.categories) { category in
+                            Text(category.name)
+                                .font(.caption)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(Capsule().fill(.blue.opacity(0.2)))
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .padding(.bottom, 10)
+                }
+            }
+            
+            // Ingredients Section
+            Markdown("### Ingredients")
+            Markdown(recipe.ingredients) // Directly display the ingredients string
+                .padding(.bottom, 10)
+            
+            // Instructions Section
+            Markdown("### Instructions")
+            Markdown(recipe.instructions) // Directly display the instructions string
+            
+            // Edit Button
+            Button("Edit Recipe") {
+                recipeToEdit = recipe
+            }
+            .buttonStyle(.bordered)
+            .padding(.top)
+        }
+        .padding()
+        .markdownTheme(.gitHub)
+
     }
 }
 
