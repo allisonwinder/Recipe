@@ -22,50 +22,71 @@ struct CategoryManagerView: View {
                 ForEach(viewModel.allCategories) { category in
                     if editingCategory?.id == category.id {
                         // Inline editing mode
-                        HStack {
+                        HStack(spacing: 12) {
                             TextField("Edit Name", text: $editedName)
                                 .textFieldStyle(.roundedBorder)
-                            Button("Save") {
+                                .padding(.vertical, 4)
+                            Button {
                                 saveEditedCategory()
+                            } label: {
+                                Label("Save", systemImage: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                    .labelStyle(.iconOnly)
                             }
-                            .buttonStyle(.borderless)
-                            Button("Cancel") {
-                                editingCategory = nil
+                            .buttonStyle(.plain)
+                            Button {
+                                cancelEditing()
+                            } label: {
+                                Label("Cancel", systemImage: "xmark.circle.fill")
+                                    .foregroundColor(.red)
+                                    .labelStyle(.iconOnly)
                             }
-                            .buttonStyle(.borderless)
+                            .buttonStyle(.plain)
                         }
+                        .padding(.vertical, 4)
                     } else {
                         // Default display mode
-                        HStack {
+                        HStack(spacing: 12) {
                             Text(category.name)
+                                .font(.headline)
                             Spacer()
-                            Button("Edit") {
+                            Button {
                                 startEditingCategory(category)
+                            } label: {
+                                Label("Edit", systemImage: "pencil.circle.fill")
+                                    .foregroundColor(.blue)
+                                    .labelStyle(.iconOnly)
                             }
-                            .buttonStyle(.borderless)
+                            .buttonStyle(.plain)
                             Button {
                                 viewModel.deleteCategory(category: category)
                             } label: {
-                                Image(systemName: "trash")
+                                Label("Delete", systemImage: "trash.circle.fill")
                                     .foregroundColor(.red)
+                                    .labelStyle(.iconOnly)
                             }
+                            .buttonStyle(.plain)
                         }
+                        .padding(.vertical, 4)
                     }
                 }
 
                 // Add new category
-                HStack {
+                HStack(spacing: 12) {
                     TextField("New Category", text: $newCategoryName)
                         .textFieldStyle(.roundedBorder)
+                        .padding(.vertical, 4)
                     Button {
-                        viewModel.addCategory(name: newCategoryName)
-                        newCategoryName = ""
+                        addNewCategory()
                     } label: {
-                        Image(systemName: "plus.circle.fill")
+                        Label("Add", systemImage: "plus.circle.fill")
                             .foregroundColor(.blue)
+                            .labelStyle(.iconOnly)
                     }
+                    .buttonStyle(.plain)
                     .disabled(newCategoryName.isEmpty)
                 }
+                .padding(.vertical, 4)
             }
             .navigationTitle("Manage Categories")
             .toolbar {
@@ -90,6 +111,16 @@ struct CategoryManagerView: View {
             editingCategory = nil
         }
     }
+
+    private func cancelEditing() {
+        editingCategory = nil
+    }
+
+    private func addNewCategory() {
+        viewModel.addCategory(name: newCategoryName)
+        newCategoryName = ""
+    }
 }
+
 
 

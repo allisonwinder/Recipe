@@ -17,30 +17,12 @@ struct ContentView: View {
     @State private var searchText: String = ""
     @State private var isEditing: Bool = false // Track edit mode
 
-    private var filteredRecipes: [Recipe] {
-        if searchText.isEmpty {
-            return viewModel.allRecipes
-        } else {
-            return viewModel.allRecipes.filter { recipe in
-                recipe.name.localizedCaseInsensitiveContains(searchText) ||
-                recipe.ingredients.localizedCaseInsensitiveContains(searchText) ||
-                recipe.instructions.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-    }
-
     var body: some View {
         NavigationSplitView {
             List {
                 Section(header: Text("Special Categories")) {
                     NavigationLink {
-                        List(viewModel.favorites) { recipe in
-                            NavigationLink {
-                                recipeDetailView(recipe: recipe)
-                            } label: {
-                                Text(recipe.name)
-                            }
-                        }
+                        recipeListView(for: viewModel.favorites)
                     } label: {
                         Text("Favorites")
                     }
@@ -48,13 +30,7 @@ struct ContentView: View {
                 Section(header: Text("Other Categories")) {
                     ForEach(viewModel.allCategories) { category in
                         NavigationLink {
-                            List(category.recipes) { recipe in
-                                NavigationLink {
-                                    recipeDetailView(recipe: recipe)
-                                } label: {
-                                    Text(recipe.name)
-                                }
-                            }
+                            recipeListView(for: category.recipes)
                         } label: {
                             Text(category.name)
                         }
@@ -72,41 +48,7 @@ struct ContentView: View {
                 }
             }
         } content: {
-            List {
-                ForEach(filteredRecipes) { recipe in
-                    if isEditing {
-                        HStack {
-                            Button(action: {
-                                deleteRecipe(recipe)
-                            }) {
-                                Image(systemName: "minus.circle.fill")
-                                    .foregroundColor(.red)
-                            }
-                            Text(recipe.name)
-                        }
-                    } else {
-                        NavigationLink {
-                            recipeDetailView(recipe: recipe)
-                        } label: {
-                            Text(recipe.name)
-                        }
-                    }
-                }
-                .onDelete(perform: isEditing ? deleteRecipes : nil)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(isEditing ? "Done" : "Edit") {
-                        isEditing.toggle()
-                    }
-                }
-                ToolbarItem {
-                    Button(action: addNewRecipe) {
-                        Label("Add Recipe", systemImage: "plus")
-                    }
-                }
-            }
-            .searchable(text: $searchText)
+            recipeListView(for: viewModel.allRecipes)
         } detail: {
             Text("Select a recipe")
         }
@@ -131,15 +73,70 @@ struct ContentView: View {
         viewModel.deleteRecipe(recipe)
     }
     
-    private func deleteRecipes(at offsets: IndexSet) {
-        let recipesToDelete = offsets.map { filteredRecipes[$0] }
+    private func deleteRecipes(at offsets: IndexSet, from recipes: [Recipe]) {
+        // Map offsets to recipes
+        let recipesToDelete = offsets.map { recipes[$0] }
         for recipe in recipesToDelete {
-            deleteRecipe(recipe)
+            deleteRecipe(recipe) // Delete each recipe using the viewModel
         }
     }
+
+    private func getFilteredRecipes(from recipes: [Recipe]) -> [Recipe] {
+        guard !searchText.isEmpty else { return recipes }
+        return recipes.filter { recipe in
+            recipe.name.localizedCaseInsensitiveContains(searchText) ||
+            recipe.ingredients.localizedCaseInsensitiveContains(searchText) ||
+            recipe.instructions.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+
     
     private func toggleFavorite(for recipe: Recipe) {
         viewModel.toggleFavorite(recipe: recipe)
+    }
+    
+    private func recipeListView(for recipes: [Recipe]) -> some View {
+        
+        let filteredRecipes = getFilteredRecipes(from: recipes)
+        
+        return List {
+            ForEach (filteredRecipes) { recipe in
+                if isEditing {
+                    HStack {
+                        Button(action: {
+                            deleteRecipe(recipe)
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .foregroundColor(.red)
+                        }
+                        Text(recipe.name)
+                    }
+                } else {
+                    NavigationLink {
+                        recipeDetailView(recipe: recipe)
+                    } label: {
+                        Text(recipe.name)
+                    }
+                }
+            }
+            .onDelete { offsets in
+                deleteRecipes(at: offsets, from: filteredRecipes)
+            }
+
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(isEditing ? "Done" : "Edit") {
+                    isEditing.toggle()
+                }
+            }
+            ToolbarItem {
+                Button(action: addNewRecipe) {
+                    Label("Add Recipe", systemImage: "plus")
+                }
+            }
+        }
+        .searchable(text: $searchText)
     }
     
     private func recipeDetailView(recipe: Recipe) -> some View {

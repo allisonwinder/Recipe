@@ -116,9 +116,7 @@ struct RecipeEditorView: View {
                 }
                 .padding()
             }
-            .navigationTitle(
-                Text("Recipe Editor")
-            )
+            .navigationTitle( "\(recipe.name.isEmpty ? "New Recipe" : "Edit Recipe" )")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {

@@ -19,7 +19,6 @@ class RecipeViewModel {
     
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
-        Data(context: modelContext)
         fetchData()
         fetchFavorites()
     }
@@ -40,6 +39,11 @@ class RecipeViewModel {
             // Fetch all categories
             let categoryDescriptor = FetchDescriptor<Category>(sortBy: [SortDescriptor(\.name)])
             allCategories = try modelContext.fetch(categoryDescriptor)
+            
+            if allRecipes.isEmpty {
+                Data(context: modelContext)
+                fetchData()
+            }
             
             print("Recipes fetched: \(allRecipes.count)")
             print("Categories fetched: \(allCategories.count)")
@@ -67,6 +71,45 @@ class RecipeViewModel {
     
     
     //MARK: - User Intents
+        
+    func addCategory(name: String) {
+        guard !name.isEmpty, !allCategories.contains(where: { $0.name == name }) else { return }
+        let newCategory = Category(name: name)
+        modelContext.insert(newCategory)
+        saveContext()
+        fetchData()
+    }
+
+    
+    func deleteCategory(category: Category) {
+        modelContext.delete(category)
+        saveContext()
+        fetchData()
+    }
+        
+
+    
+    func deleteRecipe(_ recipe: Recipe) {
+        // Remove the recipe from its categories
+        for category in recipe.categories {
+            category.recipes.removeAll { $0.id == recipe.id }
+        }
+        // Delete the recipe from the model context
+        modelContext.delete(recipe)
+        saveContext()
+        fetchData() // Refresh the list
+    }
+
+        
+
+    func saveContext() {
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error saving context: \(error)")
+        }
+    }
+
     
     func saveRecipe(_ recipe: Recipe) {
         
@@ -85,50 +128,11 @@ class RecipeViewModel {
         fetchData()
         fetchFavorites()
     }
-        
-        
-        func addCategory(name: String) {
-            guard !name.isEmpty, !allCategories.contains(where: { $0.name == name }) else { return }
-            let newCategory = Category(name: name)
-            modelContext.insert(newCategory)
-            saveContext()
-            fetchData()
-        }
-        
-
-    
-    func deleteRecipe(_ recipe: Recipe) {
-        // Remove the recipe from its categories
-        for category in recipe.categories {
-            category.recipes.removeAll { $0.id == recipe.id }
-        }
-        // Delete the recipe from the model context
-        modelContext.delete(recipe)
-        saveContext()
-        fetchData() // Refresh the list
-    }
-
-        
-        func deleteCategory(category: Category) {
-            modelContext.delete(category)
-            saveContext()
-            fetchData()
-        }
-        
-        func saveContext() {
-            do {
-                try modelContext.save()
-            } catch {
-                print("Error saving context: \(error)")
-            }
-        }
     
     func toggleFavorite(recipe: Recipe) {
         recipe.favorite.toggle()
         do {
-            print(modelContext.hasChanges)
             try modelContext.save()
-            print(modelContext.hasChanges)
             saveContext()
         } catch {
             print("Error saving context: \(error)")
