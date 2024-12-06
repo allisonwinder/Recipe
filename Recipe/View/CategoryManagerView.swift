@@ -16,20 +16,20 @@ struct CategoryManagerView: View {
     @State private var editedName: String = ""
 
     var body: some View {
+        
         NavigationView {
             List {
-                // List of categories
                 ForEach(viewModel.allCategories) { category in
                     if editingCategory?.id == category.id {
-                        // Inline editing mode
-                        HStack(spacing: 12) {
+                        
+                        HStack(spacing: CategoryConstants.spacing) {
                             TextField("Edit Name", text: $editedName)
                                 .textFieldStyle(.roundedBorder)
-                                .padding(.vertical, 4)
+                                .padding(.vertical, Constants.verticalPadding)
                             Button {
                                 saveEditedCategory()
                             } label: {
-                                Label("Save", systemImage: "checkmark.circle.fill")
+                                Label("Save", systemImage: CategoryConstants.save)
                                     .foregroundColor(.green)
                                     .labelStyle(.iconOnly)
                             }
@@ -37,23 +37,22 @@ struct CategoryManagerView: View {
                             Button {
                                 cancelEditing()
                             } label: {
-                                Label("Cancel", systemImage: "xmark.circle.fill")
+                                Label("Cancel", systemImage: CategoryConstants.cancel)
                                     .foregroundColor(.red)
                                     .labelStyle(.iconOnly)
                             }
                             .buttonStyle(.plain)
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, Constants.verticalPadding)
                     } else {
-                        // Default display mode
-                        HStack(spacing: 12) {
+                        HStack(spacing: CategoryConstants.spacing) {
                             Text(category.name)
                                 .font(.headline)
                             Spacer()
                             Button {
                                 startEditingCategory(category)
                             } label: {
-                                Label("Edit", systemImage: "pencil.circle.fill")
+                                Label("Edit", systemImage: CategoryConstants.edit)
                                     .foregroundColor(.blue)
                                     .labelStyle(.iconOnly)
                             }
@@ -61,32 +60,32 @@ struct CategoryManagerView: View {
                             Button {
                                 viewModel.deleteCategory(category: category)
                             } label: {
-                                Label("Delete", systemImage: "trash.circle.fill")
+                                Label("Delete", systemImage: CategoryConstants.trash)
                                     .foregroundColor(.red)
                                     .labelStyle(.iconOnly)
                             }
                             .buttonStyle(.plain)
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, Constants.verticalPadding)
                     }
                 }
 
                 // Add new category
-                HStack(spacing: 12) {
+                HStack(spacing: CategoryConstants.spacing) {
                     TextField("New Category", text: $newCategoryName)
                         .textFieldStyle(.roundedBorder)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, Constants.verticalPadding)
                     Button {
                         addNewCategory()
                     } label: {
-                        Label("Add", systemImage: "plus.circle.fill")
+                        Label("Add", systemImage: CategoryConstants.filledAdd)
                             .foregroundColor(.blue)
                             .labelStyle(.iconOnly)
                     }
                     .buttonStyle(.plain)
                     .disabled(newCategoryName.isEmpty)
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, Constants.verticalPadding)
             }
             .navigationTitle("Manage Categories")
             .toolbar {
@@ -100,26 +99,37 @@ struct CategoryManagerView: View {
     }
 
     // MARK: - Methods
-    private func startEditingCategory(_ category: Category) {
-        editingCategory = category
-        editedName = category.name
+    
+    private func addNewCategory() {
+        viewModel.addCategory(name: newCategoryName)
+        newCategoryName = ""
     }
-
+    
+    private func cancelEditing() {
+        editingCategory = nil
+    }
+    
     private func saveEditedCategory() {
         if let category = editingCategory {
             viewModel.updateCategory(category: category, newName: editedName)
             editingCategory = nil
         }
     }
-
-    private func cancelEditing() {
-        editingCategory = nil
+    
+    private func startEditingCategory(_ category: Category) {
+        editingCategory = category
+        editedName = category.name
     }
 
-    private func addNewCategory() {
-        viewModel.addCategory(name: newCategoryName)
-        newCategoryName = ""
+    private struct CategoryConstants {
+        static let cancel = "xmark.circle.fill"
+        static let edit = "pencil.circle.fill"
+        static let filledAdd = "plus.circle.fill"
+        static let save = "checkmark.circle.fill"
+        static let spacing: CGFloat = 12
+        static let trash = "trash.circle.fill"
     }
+
 }
 
 

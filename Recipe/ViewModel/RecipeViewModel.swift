@@ -31,12 +31,11 @@ class RecipeViewModel {
     private func fetchData() {
         do {
             
-            try modelContext.save()
-            // Fetch all recipes
+            try? modelContext.save()
+
             let recipeDescriptor = FetchDescriptor<Recipe>(sortBy: [SortDescriptor(\.name)])
             allRecipes = try modelContext.fetch(recipeDescriptor)
-            
-            // Fetch all categories
+
             let categoryDescriptor = FetchDescriptor<Category>(sortBy: [SortDescriptor(\.name)])
             allCategories = try modelContext.fetch(categoryDescriptor)
             
@@ -90,14 +89,12 @@ class RecipeViewModel {
 
     
     func deleteRecipe(_ recipe: Recipe) {
-        // Remove the recipe from its categories
         for category in recipe.categories {
             category.recipes.removeAll { $0.id == recipe.id }
         }
-        // Delete the recipe from the model context
         modelContext.delete(recipe)
         saveContext()
-        fetchData() // Refresh the list
+        fetchData()
     }
 
         
@@ -110,7 +107,6 @@ class RecipeViewModel {
         }
     }
 
-    
     func saveRecipe(_ recipe: Recipe) {
         
         let allCategory = allCategories[0]

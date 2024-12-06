@@ -13,9 +13,9 @@ struct ContentView: View {
     @Environment(RecipeViewModel.self) private var viewModel
     @State private var isCategoryManagerPresented: Bool = false
     @State private var recipeToEdit: Recipe?
-    @State private var newRecipeToEdit: Recipe?  // State for the new recipe
+    @State private var newRecipeToEdit: Recipe?
     @State private var searchText: String = ""
-    @State private var isEditing: Bool = false // Track edit mode
+    @State private var isEditing: Bool = false
 
     var body: some View {
         NavigationSplitView {
@@ -43,7 +43,7 @@ struct ContentView: View {
                     Button {
                         isCategoryManagerPresented = true
                     } label: {
-                        Label("Manage Categories", systemImage: "tag")
+                        Label("Manage Categories", systemImage: Constants.add)
                     }
                 }
             }
@@ -55,7 +55,6 @@ struct ContentView: View {
         .sheet(item: $recipeToEdit) { recipe in
             RecipeEditorView(recipe: recipe)
         }
-        // Handle newRecipeToEdit as an Optional, with safe unwrapping
         .sheet(item: $newRecipeToEdit) { recipe in
             RecipeEditorView(recipe: recipe)
         }
@@ -74,10 +73,9 @@ struct ContentView: View {
     }
     
     private func deleteRecipes(at offsets: IndexSet, from recipes: [Recipe]) {
-        // Map offsets to recipes
         let recipesToDelete = offsets.map { recipes[$0] }
         for recipe in recipesToDelete {
-            deleteRecipe(recipe) // Delete each recipe using the viewModel
+            deleteRecipe(recipe)
         }
     }
 
@@ -96,7 +94,6 @@ struct ContentView: View {
     }
     
     private func recipeListView(for recipes: [Recipe]) -> some View {
-        
         let filteredRecipes = getFilteredRecipes(from: recipes)
         
         return List {
@@ -106,7 +103,7 @@ struct ContentView: View {
                         Button(action: {
                             deleteRecipe(recipe)
                         }) {
-                            Image(systemName: "minus.circle.fill")
+                            Image(systemName: Constants.delete)
                                 .foregroundColor(.red)
                         }
                         Text(recipe.name)
@@ -132,23 +129,23 @@ struct ContentView: View {
             }
             ToolbarItem {
                 Button(action: addNewRecipe) {
-                    Label("Add Recipe", systemImage: "plus")
+                    Label("Add Recipe", systemImage: Constants.add)
                 }
             }
         }
         .searchable(text: $searchText)
     }
     
+    
+    
     private func recipeDetailView(recipe: Recipe) -> some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Recipe Name
+            VStack(alignment: .leading, spacing: Constants.spacing) {
                 Markdown("# \(recipe.name)")
                     .font(.largeTitle)
-                    .padding(.bottom, 10)
+                    .padding(.bottom, Constants.padding)
                 
-                // Recipe Metadata
-                HStack(spacing: 10) {
+                HStack(spacing: Constants.padding) {
                     Text("Author: \(recipe.author)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -167,52 +164,58 @@ struct ContentView: View {
                     Button(action: {
                         toggleFavorite(for: recipe)
                     }) {
-                        Image(systemName: recipe.favorite ? "heart.fill" : "heart")
+                        Image(systemName: recipe.favorite ? ContentConstants.filledHeart : ContentConstants.heart)
                             .foregroundColor(recipe.favorite ? .red : .gray)
                             .imageScale(.large)
                     }
                     .buttonStyle(.borderless)
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, Constants.padding)
                 
-                // Categories as Chips
                 if !recipe.categories.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
+                        HStack(spacing: Constants.padding) {
                             ForEach(recipe.categories) { category in
                                 Text(category.name)
                                     .font(.caption)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(Capsule().fill(.blue.opacity(0.2)))
+                                    .padding(.horizontal, Constants.padding)
+                                    .padding(.vertical, Constants.verticalPadding)
+                                    .background(Capsule().fill(.blue.opacity(ContentConstants.opacity)))
                                     .foregroundColor(.blue)
                             }
                         }
-                        .padding(.bottom, 10)
+                        .padding(.bottom, Constants.padding)
                     }
                 }
                 
-                // Ingredients Section
                 Markdown("### Ingredients")
-                Markdown(recipe.ingredients) // Directly display the ingredients string
-                    .padding(.bottom, 10)
+                Markdown(recipe.ingredients)
+                    .padding(.bottom, Constants.padding)
                 
-                // Instructions Section
                 Markdown("### Instructions")
-                Markdown(recipe.instructions) // Directly display the instructions string
+                Markdown(recipe.instructions)
                 
-                // Edit Button
-                Button("Edit Recipe") {
-                    recipeToEdit = recipe
-                }
-                .buttonStyle(.bordered)
-                .padding(.top)
             }
             .padding()
             .markdownTheme(.gitHub)
 
         }
+        .toolbar {
+            ToolbarItem {
+                Button("Edit Recipe", systemImage: ContentConstants.pencil) {
+                    recipeToEdit = recipe
+                }
+            }
+        }
     }
+    
+    private struct ContentConstants {
+        static let filledHeart = "heart.fill"
+        static let heart = "heart"
+        static let opacity: CGFloat = 0.2
+        static let pencil = "pencil"
+    }
+    
 }
 
 

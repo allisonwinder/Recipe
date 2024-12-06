@@ -25,50 +25,50 @@ struct RecipeEditorView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 20) {
-                    // Recipe Information Section
-                    GroupBox(label: Label("Recipe Info", systemImage: "info.circle")) {
-                        VStack(alignment: .leading, spacing: 10) {
+                VStack(spacing: Constants.spacing) {
+
+                    GroupBox(label: Label("Recipe Info", systemImage: EditorConstants.infoCircle)) {
+                        VStack(alignment: .leading, spacing: Constants.padding) {
                             TextField("Recipe Name", text: $recipe.name)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
                             TextField("Author", text: $recipe.author)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                            Stepper("Servings: \(recipe.servings)", value: $recipe.servings, in: 0...100)
+                            Stepper("Servings: \(recipe.servings)", value: $recipe.servings, in: EditorConstants.stepperMin...EditorConstants.stepperServingMax)
 
-                            Stepper("Prep Time: \(recipe.time) minutes", value: $recipe.time, in: 0...720)
+                            Stepper("Prep Time: \(recipe.time) minutes", value: $recipe.time, in: EditorConstants.stepperMin...EditorConstants.stepperTimeMax)
 
                             VStack(alignment: .leading) {
                                 Text("Ingredients")
                                     .font(.headline)
                                 TextEditor(text: $recipe.ingredients)
-                                    .frame(height: 150)
+                                    .frame(height: EditorConstants.textEditorHeight)
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                        RoundedRectangle(cornerRadius: EditorConstants.cornerRadius)
+                                            .stroke(.gray.opacity(EditorConstants.opacity), lineWidth: EditorConstants.linewidth)
                                     )
-                                    .padding(.top, 5)
+                                    .padding(.top, Constants.verticalPadding)
                             }
 
                             VStack(alignment: .leading) {
                                 Text("Instructions")
                                     .font(.headline)
                                 TextEditor(text: $recipe.instructions)
-                                    .frame(height: 200)
+                                    .frame(height: EditorConstants.textEditorHeight)
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                        RoundedRectangle(cornerRadius: EditorConstants.cornerRadius)
+                                            .stroke(.gray.opacity(EditorConstants.opacity), lineWidth: EditorConstants.linewidth)
                                     )
-                                    .padding(.top, 5)
+                                    .padding(.top, Constants.verticalPadding)
                             }
                         }
                         .padding()
                     }
 
                     // Categories Section
-                    GroupBox(label: Label("Categories", systemImage: "tag")) {
-                        VStack(alignment: .leading, spacing: 10) {
+                    GroupBox(label: Label("Categories", systemImage: EditorConstants.categoryTag)) {
+                        VStack(alignment: .leading, spacing: Constants.padding) {
                             ForEach(recipe.categories) { category in
                                 HStack {
                                     Text(category.name)
@@ -76,7 +76,7 @@ struct RecipeEditorView: View {
                                     Button(action: {
                                         removeCategory(category)
                                     }) {
-                                        Image(systemName: "minus.circle.fill")
+                                        Image(systemName: Constants.delete)
                                             .foregroundColor(.red)
                                     }
                                 }
@@ -108,8 +108,8 @@ struct RecipeEditorView: View {
                     }
 
                     // Additional Info Section
-                    GroupBox(label: Label("Additional Info", systemImage: "ellipsis.circle")) {
-                        VStack(alignment: .leading, spacing: 10) {
+                    GroupBox(label: Label("Additional Info", systemImage: EditorConstants.ellipsis)) {
+                        VStack(alignment: .leading, spacing: Constants.padding) {
                             Toggle("Favorite", isOn: $recipe.favorite)
 
                             DatePicker("Date Added", selection: $recipe.dateAdded, displayedComponents: .date)
@@ -139,15 +139,7 @@ struct RecipeEditorView: View {
         }
     }
 
-    // Remove a category from the recipe
-    private func removeCategory(_ category: Category) {
-        if let index = recipe.categories.firstIndex(of: category) {
-            recipe.categories.remove(at: index)
-            category.recipes.removeAll { $0.id == recipe.id }
-        }
-    }
 
-    // Add a new category to the recipe
     private func addCategory(_ category: Category?) {
         if let category = category, !recipe.categories.contains(category) {
             recipe.categories.append(category)
@@ -162,8 +154,19 @@ struct RecipeEditorView: View {
         recipe.categories.append(newCategory)
         newCategoryName = ""
     }
+    
+    private func cancelEditing() {
+        recipe = originalRecipe
+        dismiss()
+    }
+    
+    private func removeCategory(_ category: Category) {
+        if let index = recipe.categories.firstIndex(of: category) {
+            recipe.categories.remove(at: index)
+            category.recipes.removeAll { $0.id == recipe.id }
+        }
+    }
 
-    // Save the recipe and update the model
     private func saveRecipe(unsavedRecipe: Recipe) {
         if case unsavedRecipe.name = "" {
             dismiss()
@@ -173,10 +176,17 @@ struct RecipeEditorView: View {
         
     }
 
-    // Handle the cancel action: revert changes to the original recipe
-    private func cancelEditing() {
-        recipe = originalRecipe // Restore the original recipe
-        dismiss() // Dismiss the editor view
+    private struct EditorConstants {
+        static let categoryTag = "tag"
+        static let cornerRadius: CGFloat = 8
+        static let ellipsis = "ellipsis.circle"
+        static let infoCircle = "info.circle"
+        static let linewidth: CGFloat = 1
+        static let opacity: CGFloat = 0.5
+        static let stepperMin = 0
+        static let stepperServingMax = 100
+        static let stepperTimeMax = 720
+        static let textEditorHeight: CGFloat = 200
     }
 }
 
