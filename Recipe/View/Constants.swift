@@ -4,6 +4,7 @@
 //
 //  Created by IS 543 on 12/5/24.
 //
+// No outside resources
 
 import SwiftUI
 import SwiftData

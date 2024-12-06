@@ -4,6 +4,7 @@
 //
 //  Created by IS 543 on 11/29/24.
 //
+// Some of UI was created by Chat GPT. Some of the editing logic was content we learned in class. Other than that, Chat GPT helped me a little on editing logic as well.
 
 import SwiftUI
 import SwiftData

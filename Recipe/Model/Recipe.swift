@@ -4,23 +4,14 @@
 //
 //  Created by IS 543 on 11/15/24.
 //
+// Any inspiration I had came from previous assignments and what we talked about in class
+
 import Foundation
 import SwiftData
 
 protocol RecipeDatabase {
     var recipes: [Recipe] { get }
     var categories: [Category] { get }
-    
-    mutating func editRecipe(for recipe: Recipe)
-    mutating func editCategory(for category: Category)
-    
-    mutating func addRecipe(for recipe: Recipe)
-    mutating func addCategory(for category: Category)
-    
-    mutating func deleteRecipe(for recipe: Recipe)
-    mutating func deleteCategory(for category: Category)
-    
-    mutating func toggleFavorite(for recipe: Recipe)
 }
 
 @Model

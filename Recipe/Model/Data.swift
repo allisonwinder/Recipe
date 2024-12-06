@@ -4,6 +4,7 @@
 //
 //  Created by IS 543 on 11/29/24.
 //
+// Koleton helped explain to me some ideas on the logic for the data; however, I did this by myself. I did use Chat GPT to take my existing recipes and turn them into the format I wanted
 
 import SwiftData
 import Foundation

@@ -4,6 +4,8 @@
 //
 //  Created by IS 543 on 11/25/24.
 //
+// Chat GPT helped me debug some issues with my fetchData or saving the model context; however, most of this is what we learned in class or I got help debugging from Professor Liddle.
+
 import Foundation
 import SwiftData
 import SwiftUI
@@ -11,6 +13,7 @@ import SwiftUI
 
 @Observable
 class RecipeViewModel {
+    
     //MARK: - Properties
     
     private var modelContext: ModelContext
@@ -24,6 +27,7 @@ class RecipeViewModel {
     }
     
     //MARK: - Model Access
+    
     private(set) var allRecipes: [Recipe] = []
     private(set) var allCategories: [Category] = []
     
@@ -65,8 +69,6 @@ class RecipeViewModel {
             print ("Failed to load favorites")
         }
     }
-    
-    
     
     
     //MARK: - User Intents

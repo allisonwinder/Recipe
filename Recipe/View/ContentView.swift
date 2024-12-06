@@ -4,6 +4,7 @@
 //
 //  Created by IS 543 on 11/15/24.
 //
+// Professor Liddle helped me to get the logic of the list view. Chat GPT helped create my UI as well as some of the Markdown we learned in class.
 
 import SwiftUI
 import SwiftData
