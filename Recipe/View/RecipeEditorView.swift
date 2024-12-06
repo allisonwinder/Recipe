@@ -42,6 +42,8 @@ struct RecipeEditorView: View {
                             VStack(alignment: .leading) {
                                 Text("Ingredients")
                                     .font(.headline)
+                                Text("For the formatting to be correct, please start each new line with a tab and then a - for the ingredient.")
+                                    .font(.subheadline)
                                 TextEditor(text: $recipe.ingredients)
                                     .frame(height: EditorConstants.textEditorHeight)
                                     .overlay(
@@ -54,6 +56,8 @@ struct RecipeEditorView: View {
                             VStack(alignment: .leading) {
                                 Text("Instructions")
                                     .font(.headline)
+                                Text("For the formatting to be correct, please start each new line with a tab. If you want each sentence on a new line, then press enter and then tab.")
+                                    .font(.subheadline)
                                 TextEditor(text: $recipe.instructions)
                                     .frame(height: EditorConstants.textEditorHeight)
                                     .overlay(
@@ -111,11 +115,18 @@ struct RecipeEditorView: View {
                     GroupBox(label: Label("Additional Info", systemImage: EditorConstants.ellipsis)) {
                         VStack(alignment: .leading, spacing: Constants.padding) {
                             Toggle("Favorite", isOn: $recipe.favorite)
-
+                                
                             DatePicker("Date Added", selection: $recipe.dateAdded, displayedComponents: .date)
-
-                            TextField("Notes", text: $recipe.notes)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            
+                            Text("Notes")
+                            Text("For the formatting to be correct, please start each new line with a tab If you want each sentence on a new line, then press enter and then tab.")
+                                .font(.subheadline)
+                            TextEditor(text: $recipe.notes)
+                                .frame(height: EditorConstants.textEditorHeight)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: EditorConstants.cornerRadius)
+                                        .stroke(.gray.opacity(EditorConstants.opacity), lineWidth: EditorConstants.linewidth)
+                                )
                         }
                         .padding()
                     }

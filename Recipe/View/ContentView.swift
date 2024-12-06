@@ -194,6 +194,11 @@ struct ContentView: View {
                 
                 Markdown("### Instructions")
                 Markdown(recipe.instructions)
+                    .padding(.bottom, Constants.padding)
+                
+                Markdown("### Notes")
+                Markdown(recipe.notes)
+                    .padding(.bottom, Constants.padding)
                 
             }
             .padding()
